@@ -42,7 +42,7 @@ module GitMarkdown
 
     desc "pr PR_IDENTIFIER", "Fetch a pull request and convert to Markdown"
     option :output, type: :string, desc: "Output directory or file path"
-    option :stdout, type: :boolean, default: false, desc: "Output to stdout instead of file"
+    option :stdout, type: :boolean, default: false, desc: "Output to stdout instead of file", lazy_default: true
     option :status, type: :string, default: "unresolved", enum: %w[unresolved resolved all],
       desc: "Filter comments by status"
     def pr(identifier)

@@ -144,6 +144,21 @@ bundle exec standardrb
 bundle exec rake
 ```
 
+### Building and Installing Locally
+
+To build and install the gem from source:
+
+```bash
+# Build the gem
+gem build git-markdown.gemspec
+
+# Install the built gem
+gem install --local git-markdown-*.gem
+
+# Or install directly from source
+bundle exec rake install
+```
+
 ## Contributing
 
 1. Fork it
