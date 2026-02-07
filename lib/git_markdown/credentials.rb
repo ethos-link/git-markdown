@@ -23,8 +23,13 @@ module GitMarkdown
 
         input = "protocol=#{protocol}\nhost=#{host}\n"
         output = nil
+        env = {
+          "GIT_TERMINAL_PROMPT" => "0",
+          "GIT_ASKPASS" => "/bin/false",
+          "SSH_ASKPASS" => "/bin/false"
+        }
 
-        IO.popen(%w[git credential fill], "r+") do |io|
+        IO.popen(env, %w[git credential fill], "r+") do |io|
           io.write(input)
           io.close_write
           output = io.read

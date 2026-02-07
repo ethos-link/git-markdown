@@ -4,7 +4,6 @@ Gem::Specification.new do |spec|
   spec.name = "git-markdown"
   spec.version = "0.1.0"
   spec.authors = ["ethos-link"]
-  spec.email = ["hello@ethos-link.com"]
 
   spec.summary = "Convert GitHub PRs to Markdown for local AI code review"
   spec.description = "A CLI tool that fetches GitHub pull requests and converts them to Markdown format, perfect for local AI assistants like opencode and codex."
