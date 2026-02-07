@@ -1,0 +1,56 @@
+# <%= @pr.title %>
+
+**#<%= @pr.number %>** by @<%= @pr.author %> | <%= @pr.state.upcase %> | <%= format_date(@pr.created_at) %>
+
+[View on GitHub](<%= @pr.html_url %>)
+
+---
+
+<%= @pr.body %>
+
+---
+
+<% inline_comments = filtered_inline_comments %>
+<% if inline_comments.any? %>
+## Review Comments
+
+<% group_comments_by_file(inline_comments).each do |file, comments| %>
+### <%= file %>
+
+<% comments.sort_by(&:line).each do |comment| %>
+**Line <%= comment.line %>** — @<%= comment.author %> (<%= format_date(comment.created_at) %>)
+
+<%= comment.body %>
+
+---
+
+<% end %>
+<% end %>
+<% end %>
+
+<% general_comments = filtered_general_comments %>
+<% if general_comments.any? %>
+## General Comments
+
+<% general_comments.each do |comment| %>
+### @<%= comment.author %> (<%= format_date(comment.created_at) %>)
+
+<%= comment.body %>
+
+---
+
+<% end %>
+<% end %>
+
+<% if @reviews.any? { |r| r.body && !r.body.empty? } %>
+## Review Summaries
+
+<% @reviews.select { |r| r.body && !r.body.empty? }.each do |review| %>
+### @<%= review.author %> — <%= review.state %>
+
+<%= review.body %>
+
+---
+
+<% end %>
+<% end %>
