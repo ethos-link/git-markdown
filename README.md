@@ -144,19 +144,12 @@ bundle exec standardrb
 bundle exec rake
 ```
 
-### Building and Installing Locally
+### Installing Locally
 
-To build and install the gem from source:
+To install from source:
 
 ```bash
-# Build the gem
-gem build git-markdown.gemspec
-
-# Install the built gem
-gem install --local git-markdown-*.gem
-
-# Or install directly from source
-bundle exec rake install
+rake install
 ```
 
 ## Contributing
@@ -182,9 +175,9 @@ MIT License — see [LICENSE.txt](LICENSE.txt)
 
 ## Built With ❤️ By
 
-Crafted with care by the team at **[ethos-link.com](https://ethos-link.com)** — developer productivity tools and workflows for modern software teams.
+Crafted with care by the team at **[ethos-link.com](https://ethos-link.com)** — thoughtful software for modern development workflows.
 
-Also check out **[reviato.com](https://reviato.com)** for AI-powered code review automation that integrates seamlessly with your existing tools.
+Also check out **[reviato.com](https://reviato.com)** — intelligent tools that help teams work smarter, not harder.
 
 ---
 
