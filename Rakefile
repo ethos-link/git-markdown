@@ -5,7 +5,7 @@
 require "bundler/gem_tasks"
 require "rake/testtask"
 require "standard/rake"
-require_relative "lib/git_markdown/version"
+require_relative "lib/git/markdown/version"
 
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"
