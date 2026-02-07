@@ -6,3 +6,8 @@ source "https://rubygems.org"
 gemspec
 
 gem "gem-release", "~> 2.2"
+
+group :development do
+  gem "commitlint", require: false
+  gem "lefthook", require: false
+end

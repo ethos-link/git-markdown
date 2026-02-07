@@ -78,6 +78,8 @@ git-markdown version
 3. GitHub CLI (`gh auth token`)
 4. Token saved by `git-markdown setup`
 
+If you see a prompt for a GitHub username or an askpass error, set `GITHUB_TOKEN` or `GH_TOKEN` in your environment to skip git credential prompts.
+
 ## GitHub Enterprise
 
 Set your API URL:
@@ -122,6 +124,15 @@ bundle install
 bundle exec rake test
 bundle exec standardrb
 bundle exec rake
+```
+
+### Git hooks
+
+We use [lefthook](https://lefthook.dev/) with the Ruby [commitlint](https://github.com/arandilopez/commitlint) gem to enforce Conventional Commits on every commit.
+CI also validates commit messages on pull requests and pushes to main/master.
+
+```bash
+bundle exec lefthook install
 ```
 
 ### Install locally
