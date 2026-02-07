@@ -130,6 +130,22 @@ bundle exec rake
 rake install
 ```
 
+## Release
+
+Releases are triggered by pushed tags and use `CHANGELOG.md` for GitHub release notes.
+Install `git-cliff` if you want changelog automation: https://github.com/orhun/git-cliff
+The release workflow expects a `## [X.Y.Z]` entry in `CHANGELOG.md` that matches the tag.
+
+```bash
+# 1) Bump the version (commit created)
+bundle exec gem bump -v X.Y.Z
+
+# 2) Prepare release (changelog + tag + push)
+bundle exec rake release:prep
+```
+
+The release prep task skips if the changelog has no changes.
+
 ## Contributing
 
 1. Fork it

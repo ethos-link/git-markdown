@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+# Note: Releases are handled automatically by GitHub Actions when you push a tag (e.g., v0.2.0)
+# See .github/workflows/release.yml for details
 require "bundler/gem_tasks"
 require "rake/testtask"
 require "standard/rake"
+require_relative "lib/git_markdown/version"
 
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"
@@ -11,3 +14,35 @@ Rake::TestTask.new(:test) do |t|
 end
 
 task default: %i[test standard]
+
+namespace :release do
+  desc "Update changelog, commit, and tag"
+  task :prep do
+    version = GitMarkdown::VERSION
+    branch = `git rev-parse --abbrev-ref HEAD`.strip
+
+    if branch == "HEAD"
+      abort "Release prep requires a branch (not detached HEAD)."
+    end
+
+    unless ["main", "master"].include?(branch)
+      abort "Release prep must run on main or master. Current: #{branch}."
+    end
+
+    unless system("git diff --quiet") && system("git diff --cached --quiet")
+      abort "Release prep requires a clean working tree."
+    end
+
+    sh "git cliff -c cliff.toml --unreleased --tag v#{version} -o CHANGELOG.md"
+    if system("git diff --quiet -- CHANGELOG.md")
+      puts "No changelog changes. Skipping release prep."
+      next
+    end
+
+    sh "git add CHANGELOG.md"
+    sh "git commit -m \"docs: update changelog for v#{version}\""
+    sh "bundle exec gem tag -v #{version}"
+    sh "git push"
+    sh "git push origin v#{version}"
+  end
+end
