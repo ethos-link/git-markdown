@@ -11,6 +11,15 @@ module GitMarkdown
       puts
       puts "This will store your GitHub token in ~/.config/git-markdown/credentials"
       puts
+      puts "To create a token, visit:"
+      puts "  GitHub: https://github.com/settings/personal-access-tokens"
+      puts "  (For GitLab: https://gitlab.com/-/profile/personal_access_tokens)"
+      puts
+      puts "Required permissions/scopes:"
+      puts "  - repo (for private repositories)"
+      puts "  - read:org (for organization repositories)"
+      puts "  - read:discussion (for PR discussions)"
+      puts
       print "Enter your GitHub Personal Access Token: "
       token = $stdin.noecho(&:gets).chomp
       puts

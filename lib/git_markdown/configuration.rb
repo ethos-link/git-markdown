@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "yaml"
+
 module GitMarkdown
   class Configuration
     XDG_CONFIG_HOME = ENV.fetch("XDG_CONFIG_HOME", File.expand_path("~/.config"))
