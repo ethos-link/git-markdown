@@ -126,6 +126,8 @@ bundle exec standardrb
 bundle exec rake
 ```
 
+Note: `Gemfile.lock` is intentionally not tracked to avoid conflicts across Ruby versions.
+
 ### Git hooks
 
 We use [lefthook](https://lefthook.dev/) with the Ruby [commitlint](https://github.com/arandilopez/commitlint) gem to enforce Conventional Commits on every commit.
