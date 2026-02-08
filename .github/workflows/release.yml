@@ -36,6 +36,18 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Releasing version: $VERSION"
 
+      - name: Verify version matches tag
+        run: |
+          GEM_VERSION=$(ruby -r./lib/git/markdown/version -e "puts GitMarkdown::VERSION")
+          TAG_VERSION="${{ steps.get_version.outputs.version }}"
+          if [ "$GEM_VERSION" != "$TAG_VERSION" ]; then
+            echo "ERROR: Version mismatch!"
+            echo "  Tag version: $TAG_VERSION"
+            echo "  Gem version: $GEM_VERSION"
+            exit 1
+          fi
+          echo "✓ Version $GEM_VERSION matches tag"
+
       - name: Verify changelog exists
         run: |
           if [ ! -f CHANGELOG.md ]; then
@@ -62,16 +74,6 @@ jobs:
 
           echo "✓ Found changelog entry for v$VERSION"
 
-      - name: Check RubyGems API Key
-        id: check_rubygems
-        run: |
-          if [ -n "${{ secrets.RUBYGEMS_API_KEY }}" ]; then
-            echo "has_key=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_key=false" >> $GITHUB_OUTPUT
-            echo "⚠️  RUBYGEMS_API_KEY not set, skipping gem publish"
-          fi
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
@@ -80,8 +82,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish to RubyGems
-        uses: rubygems/release-gem@v1
-        if: steps.check_rubygems.outputs.has_key == 'true'
-        env:
-          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+      - name: Build and publish gem
+        run: |
+          gem build *.gemspec
+          gem push *.gem
