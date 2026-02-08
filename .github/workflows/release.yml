@@ -36,33 +36,52 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Releasing version: $VERSION"
 
+      - name: Verify changelog exists
+        run: |
+          if [ ! -f CHANGELOG.md ]; then
+            echo "ERROR: CHANGELOG.md is missing. Run 'rake release:bump' to generate it."
+            exit 1
+          fi
+
       - name: Extract release notes from changelog
         id: changelog
         run: |
           VERSION="${{ steps.get_version.outputs.version }}"
-          if [ -f CHANGELOG.md ]; then
-            awk -v version="$VERSION" '
-              $0 ~ "^## \\[" version "\\]" { found=1 }
-              found && $0 ~ "^## \\[" && $0 !~ "^## \\[" version "\\]" { exit }
-              found { print }
-            ' CHANGELOG.md > release_notes.md
-          fi
+
+          awk -v version="$VERSION" '
+            $0 ~ "^## \\[" version "\\]" { found=1 }
+            found && $0 ~ "^## \\[" && $0 !~ "^## \\[" version "\\]" { exit }
+            found { print }
+          ' CHANGELOG.md > release_notes.md
 
           if [ ! -s release_notes.md ]; then
-            echo "No changelog entry found for v$VERSION, using auto-generated notes"
-            echo "" > release_notes.md
+            echo "ERROR: No changelog entry found for v$VERSION"
+            echo "Run 'rake release:bump' to generate the changelog before creating the tag."
+            exit 1
+          fi
+
+          echo "✓ Found changelog entry for v$VERSION"
+
+      - name: Check RubyGems API Key
+        id: check_rubygems
+        run: |
+          if [ -n "${{ secrets.RUBYGEMS_API_KEY }}" ]; then
+            echo "has_key=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_key=false" >> $GITHUB_OUTPUT
+            echo "⚠️  RUBYGEMS_API_KEY not set, skipping gem publish"
           fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           body_path: release_notes.md
-          generate_release_notes: true
+          generate_release_notes: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to RubyGems
         uses: rubygems/release-gem@v1
-        if: ${{ env.RUBYGEMS_API_KEY != '' }}
+        if: steps.check_rubygems.outputs.has_key == 'true'
         env:
           RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}

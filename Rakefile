@@ -16,7 +16,7 @@ end
 task default: %i[test standard]
 
 namespace :release do
-  desc "Bump version (major|minor|patch|pre) and commit"
+  desc "Full release: update changelog, bump version, commit, tag, and push"
   task :bump, [:level] do |_t, args|
     level = args[:level] || "patch"
     valid_levels = %w[major minor patch pre]
@@ -27,11 +27,11 @@ namespace :release do
 
     branch = `git rev-parse --abbrev-ref HEAD`.strip
     unless ["main", "master"].include?(branch)
-      abort "Version bump must run on main or master. Current: #{branch}."
+      abort "Release must run on main or master. Current: #{branch}."
     end
 
     unless system("git diff --quiet") && system("git diff --cached --quiet")
-      abort "Version bump requires a clean working tree."
+      abort "Release requires a clean working tree."
     end
 
     current = GitMarkdown::VERSION
@@ -48,36 +48,42 @@ namespace :release do
       "#{parts[0]}.#{parts[1]}.#{parts[2]}.pre.1"
     end
 
-    sh "bundle exec gem bump --version #{next_version} --commit --tag --push --message 'chore(release): bump version to %{version}'"
-  end
+    puts "=== Step 1: Updating CHANGELOG.md for v#{next_version} ==="
+    sh "git cliff -c cliff.toml --unreleased --tag v#{next_version} -o CHANGELOG.md"
 
-  desc "Update changelog, commit, and tag"
-  task :prep do
-    version = GitMarkdown::VERSION
-    branch = `git rev-parse --abbrev-ref HEAD`.strip
-
-    if branch == "HEAD"
-      abort "Release prep requires a branch (not detached HEAD)."
-    end
-
-    unless ["main", "master"].include?(branch)
-      abort "Release prep must run on main or master. Current: #{branch}."
-    end
-
-    unless system("git diff --quiet") && system("git diff --cached --quiet")
-      abort "Release prep requires a clean working tree."
-    end
-
-    sh "git cliff -c cliff.toml --unreleased --tag v#{version} -o CHANGELOG.md"
     if system("git diff --quiet -- CHANGELOG.md")
-      puts "No changelog changes. Skipping release prep."
-      next
+      puts "Warning: No changelog changes detected"
+    else
+      puts "✓ Changelog updated"
     end
 
-    sh "git add CHANGELOG.md"
-    sh "git commit -m \"docs: update changelog for v#{version}\""
-    sh "bundle exec gem tag -v #{version}"
-    sh "git push"
-    sh "git push origin v#{version}"
+    puts "\n=== Step 2: Bumping version to #{next_version} ==="
+
+    File.write(
+      "lib/git/markdown/version.rb",
+      <<~RUBY
+        # frozen_string_literal: true
+
+        module GitMarkdown
+          VERSION = "#{next_version}"
+        end
+      RUBY
+    )
+
+    puts "✓ Version updated in lib/git/markdown/version.rb"
+
+    puts "\n=== Step 3: Committing changes ==="
+    sh "git add CHANGELOG.md lib/git/markdown/version.rb"
+    sh "git commit -m \"chore(release): bump version to #{next_version}\""
+    puts "✓ Changes committed"
+
+    puts "\n=== Step 4: Creating and pushing tag ==="
+    sh "git tag -a v#{next_version} -m \"Release v#{next_version}\""
+    sh "git push origin master"
+    sh "git push origin v#{next_version}"
+    puts "✓ Tag v#{next_version} created and pushed"
+
+    puts "\n✅ Release v#{next_version} prepared successfully!"
+    puts "GitHub Actions will now build and publish the release."
   end
 end
