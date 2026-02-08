@@ -7,13 +7,22 @@ Gem::Specification.new do |spec|
 
   spec.summary = "Convert GitHub PRs to Markdown for local AI code review"
   spec.description = "A CLI tool that fetches GitHub pull requests and converts them to Markdown format, perfect for local AI assistants like opencode and codex."
-  spec.homepage = "https://github.com/ethos-link/git-markdown"
+  spec.homepage = "https://www.ethos-link.com/opensource/git-markdown"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
 
-  spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = spec.homepage
-  spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
+  repo = "https://github.com/ethos-link/git-markdown"
+  branch = "master"
+
+  spec.metadata = {
+    "homepage_uri" => spec.homepage,
+    "source_code_uri" => repo,
+    "bug_tracker_uri" => "#{repo}/issues",
+    "changelog_uri" => "#{repo}/blob/#{branch}/CHANGELOG.md",
+    "documentation_uri" => "#{repo}/blob/#{branch}/README.md",
+    "funding_uri" => "https://www.reviato.com/",
+    "rubygems_mfa_required" => "true"
+  }
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject do |f|
