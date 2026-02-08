@@ -8,46 +8,46 @@ conventional_commits = true
 filter_unconventional = true
 tag_pattern = "v[0-9]*"
 
-[commit_parsers]
-message = "^feat(\(.*\))?:"
+[[commit_parsers]]
+message = '^feat(\(.*\))?:'
 group = "Added"
 
 [[commit_parsers]]
-message = "^fix(\(.*\))?:"
+message = '^fix(\(.*\))?:'
 group = "Fixed"
 
 [[commit_parsers]]
-message = "^docs(\(.*\))?:"
+message = '^docs(\(.*\))?:'
 group = "Documentation"
 
 [[commit_parsers]]
-message = "^refactor(\(.*\))?:"
+message = '^refactor(\(.*\))?:'
 group = "Changed"
 
 [[commit_parsers]]
-message = "^perf(\(.*\))?:"
+message = '^perf(\(.*\))?:'
 group = "Changed"
 
 [[commit_parsers]]
-message = "^test(\(.*\))?:"
+message = '^test(\(.*\))?:'
 group = "Changed"
 
 [[commit_parsers]]
-message = "^chore(\(.*\))?:"
+message = '^chore(\(.*\))?:'
 group = "Changed"
 
 [[commit_parsers]]
-message = "^build(\(.*\))?:"
+message = '^build(\(.*\))?:'
 group = "Changed"
 
 [[commit_parsers]]
-message = "^ci(\(.*\))?:"
+message = '^ci(\(.*\))?:'
 group = "Changed"
 
 [[commit_parsers]]
-message = "^style(\(.*\))?:"
+message = '^style(\(.*\))?:'
 group = "Changed"
 
 [[commit_parsers]]
-message = "^revert(\(.*\))?:"
+message = '^revert(\(.*\))?:'
 group = "Changed"
