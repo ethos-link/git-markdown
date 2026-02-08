@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require_relative "lib/git/markdown/version"
+
 Gem::Specification.new do |spec|
   spec.name = "git-markdown"
-  spec.version = "0.1.0"
+  spec.version = GitMarkdown::VERSION
   spec.authors = ["Paulo Fidalgo", "Ethos Link"]
 
   spec.summary = "Convert GitHub PRs to Markdown for local AI code review"
