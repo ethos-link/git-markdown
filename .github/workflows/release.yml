@@ -66,3 +66,6 @@ jobs:
 
       - name: Publish to RubyGems
         uses: rubygems/release-gem@v1
+        if: ${{ env.RUBYGEMS_API_KEY != '' }}
+        env:
+          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
