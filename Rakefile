@@ -34,7 +34,7 @@ namespace :release do
       abort "Version bump requires a clean working tree."
     end
 
-    sh "bundle exec gem bump --version #{level} --commit --tag --push"
+    sh "bundle exec gem bump --version 'next #{level}' --commit --tag --push"
   end
 
   desc "Update changelog, commit, and tag"
