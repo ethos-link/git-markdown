@@ -82,7 +82,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and publish gem
-        run: |
-          gem build *.gemspec
-          gem push *.gem
+      - name: Publish to RubyGems
+        uses: rubygems/release-gem@v1
