@@ -8,24 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2026-02-08
 
 ### <!-- 0 -->🚀 Features
-- initialize gem structure with gemspec
+- add release:bump task for automated version management
 
 
 ### <!-- 1 -->🐛 Bug Fixes
-- add missing yaml require and improve setup UX
-- hide negative flags in Thor CLI and add local install docs
-- fix git-cliff configuration
+- correct gem bump command syntax in release:bump task
 
 
 ### <!-- 3 -->📚 Documentation
-- fix README URLs and expand About section
-
-
-### <!-- 7 -->⚙️ Miscellaneous Tasks
-- update gemspec and README with proper metadata
-- streamline release prep workflow
-- add git hooks and ignore build artifacts
-- update CI ruby matrix and gitignore
-- update CI ruby matrix and gitignore
+- update the gemspec
 
 
