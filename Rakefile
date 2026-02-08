@@ -34,7 +34,21 @@ namespace :release do
       abort "Version bump requires a clean working tree."
     end
 
-    sh "bundle exec gem bump --version 'next #{level}' --commit --tag --push"
+    current = GitMarkdown::VERSION
+    parts = current.split(".").map(&:to_i)
+
+    next_version = case level
+    when "major"
+      "#{parts[0] + 1}.0.0"
+    when "minor"
+      "#{parts[0]}.#{parts[1] + 1}.0"
+    when "patch"
+      "#{parts[0]}.#{parts[1]}.#{parts[2] + 1}"
+    when "pre"
+      "#{parts[0]}.#{parts[1]}.#{parts[2]}.pre.1"
+    end
+
+    sh "bundle exec gem bump --version #{next_version} --commit --tag --push --message 'chore(release): bump version to %{version}'"
   end
 
   desc "Update changelog, commit, and tag"
