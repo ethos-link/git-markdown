@@ -52,7 +52,7 @@ git-markdown pr 123
 git-markdown pr owner/repo#123
 
 # Output to stdout (useful for piping)
-git-markdown pr 123 --stdout | pbcopy
+git-markdown pr 123 --stdout | pbcopy  # macOS; on Linux use `xclip`/`wl-copy` or redirect to a file
 
 # Save to a directory
 git-markdown pr 123 --output ./reviews/
@@ -130,8 +130,9 @@ Note: `Gemfile.lock` is intentionally not tracked to avoid conflicts across Ruby
 
 ### Git hooks
 
-We use [lefthook](https://lefthook.dev/) with the Ruby [commitlint](https://github.com/arandilopez/commitlint) gem to enforce Conventional Commits on every commit.
-CI also validates commit messages on pull requests and pushes to main/master.
+We use [lefthook](https://lefthook.dev/) with the Ruby [commitlint](https://github.com/arandilopez/commitlint) gem to enforce Conventional Commits on every commit. CI also validates commit messages on pull requests and pushes to main/master.
+
+Run the hook installer once per clone:
 
 ```bash
 bundle exec lefthook install
@@ -146,8 +147,18 @@ rake install
 ## Release
 
 Releases are triggered by pushed tags and use `CHANGELOG.md` for GitHub release notes.
-Install `git-cliff` if you want changelog automation: https://github.com/orhun/git-cliff
-The release workflow expects a `## [X.Y.Z]` entry in `CHANGELOG.md` that matches the tag.
+
+If you want changelog automation, install `git-cliff` (<https://github.com/orhun/git-cliff>) locally and use it to update `CHANGELOG.md`.
+
+The release workflow expects a `## [X.Y.Z]` entry in `CHANGELOG.md` that matches the tag. Note: `release:prep` enforces a clean working tree and must run on the `main` or `master` branch; it will skip if the changelog has no changes.
+
+Before bumping, install dependencies:
+
+```bash
+bundle install
+```
+
+Then run:
 
 ```bash
 # 1) Bump the version (commit created)
@@ -156,8 +167,6 @@ bundle exec gem bump -v X.Y.Z
 # 2) Prepare release (changelog + tag + push)
 bundle exec rake release:prep
 ```
-
-The release prep task skips if the changelog has no changes.
 
 ## Contributing
 
@@ -190,6 +199,7 @@ MIT License, see [LICENSE.txt](LICENSE.txt)
 
 ## About
 
-**git-markdown** is built by **[Ethos Link](https://www.ethos-link.com)**, a team creating thoughtful software for modern development workflows. We believe tools should adapt to how you actually work, not the other way around.
+Made by the team at [Ethos Link](https://www.ethos-link.com) — practical software for growing businesses. We build tools for hospitality and retail teams who don’t have time for complicated setups: plain-language insights, fast onboarding, and real human support so you can get clear insights, take action, and move on.
 
-If you also manage customer feedback and reviews, check out **[Reviato](https://www.reviato.com)** — we help businesses collect, manage, and respond to customer reviews with less hassle and more results.
+We also build [Reviato](https://www.reviato.com), “More stars. Less hassle.”.
+Reviato helps restaurants, hotels, clinics, vets and other local businesses collect and analyse customer reviews, highlights recurring themes, and turns feedback into actionable next steps.

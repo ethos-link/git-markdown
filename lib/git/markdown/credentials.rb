@@ -29,7 +29,7 @@ module GitMarkdown
           "SSH_ASKPASS" => "/bin/false"
         }
 
-        IO.popen(env, %w[git credential fill], "r+") do |io|
+        IO.popen(env, "git credential fill 2>/dev/null", "r+") do |io|
           io.write(input)
           io.close_write
           output = io.read
