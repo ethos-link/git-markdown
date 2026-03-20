@@ -50,9 +50,9 @@ module GitMarkdown
       def include_comment?(comment)
         case @status_filter
         when :unresolved
-          !comment.body.include?("[resolved]") && !comment.body.include?("[done]")
+          !comment.resolved? && !comment.body.include?("[resolved]") && !comment.body.include?("[done]")
         when :resolved
-          comment.body.include?("[resolved]") || comment.body.include?("[done]")
+          comment.resolved? || comment.body.include?("[resolved]") || comment.body.include?("[done]")
         else
           true
         end

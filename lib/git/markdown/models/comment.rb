@@ -4,6 +4,7 @@ module GitMarkdown
   module Models
     class Comment
       attr_reader :id, :body, :author, :path, :line, :html_url, :created_at, :updated_at, :in_reply_to_id
+      attr_accessor :resolved
 
       def initialize(attrs = {})
         @id = attrs[:id]
@@ -15,6 +16,7 @@ module GitMarkdown
         @created_at = attrs[:created_at]
         @updated_at = attrs[:updated_at]
         @in_reply_to_id = attrs[:in_reply_to_id]
+        @resolved = attrs.fetch(:resolved, false)
       end
 
       def self.from_api(data)
@@ -37,6 +39,10 @@ module GitMarkdown
 
       def reply?
         !@in_reply_to_id.nil?
+      end
+
+      def resolved?
+        @resolved == true
       end
     end
   end
