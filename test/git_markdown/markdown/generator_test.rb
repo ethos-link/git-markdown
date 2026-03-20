@@ -80,6 +80,26 @@ class GeneratorTest < Minitest::Test
     refute_includes markdown, "[resolved] This is done"
   end
 
+  def test_filters_github_resolved_comments_by_default
+    resolved_comment = GitMarkdown::Models::Comment.new(
+      id: 3,
+      body: "Fixed this issue",
+      author: "reviewer3",
+      created_at: "2024-01-15T13:00:00Z",
+      resolved: true
+    )
+
+    generator = GitMarkdown::Markdown::Generator.new(
+      @pr,
+      @comments + [resolved_comment],
+      @reviews
+    )
+
+    markdown = generator.generate
+    assert_includes markdown, "Great work!"
+    refute_includes markdown, "Fixed this issue"
+  end
+
   def test_includes_resolved_when_filtered
     resolved_comment = GitMarkdown::Models::Comment.new(
       id: 3,

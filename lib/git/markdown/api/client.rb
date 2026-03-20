@@ -17,6 +17,17 @@ module GitMarkdown
         Response.new(response)
       end
 
+      def post(path, body = {})
+        uri = build_uri(path, {})
+        request = Net::HTTP::Post.new(uri)
+        set_headers(request)
+        request["Content-Type"] = "application/json"
+        request.body = JSON.generate(body)
+
+        response = http_request(uri, request)
+        Response.new(response)
+      end
+
       private
 
       def build_uri(path, params)

@@ -7,13 +7,14 @@ module GitMarkdown
     XDG_CONFIG_HOME = ENV.fetch("XDG_CONFIG_HOME", File.expand_path("~/.config"))
     DEFAULT_PROVIDER = :github
 
-    attr_accessor :token, :provider, :api_url, :output_dir, :default_status
+    attr_accessor :token, :provider, :api_url, :graphql_url, :output_dir, :default_status
 
     def initialize
       @provider = DEFAULT_PROVIDER
       @output_dir = Dir.pwd
       @default_status = :unresolved
       @api_url = nil
+      @graphql_url = nil
     end
 
     def self.load
@@ -24,6 +25,7 @@ module GitMarkdown
       load_from_file if config_file_exist?
       resolve_credentials
       resolve_api_url if api_url.nil?
+      resolve_graphql_url if graphql_url.nil?
       self
     end
 
@@ -67,6 +69,7 @@ module GitMarkdown
       )
       @provider = config[:provider] if config[:provider]
       @api_url = config[:api_url] if config[:api_url]
+      @graphql_url = config[:graphql_url] if config[:graphql_url]
       @output_dir = config[:output_dir] if config[:output_dir]
       @default_status = config[:default_status].to_sym if config[:default_status]
     end
@@ -81,10 +84,17 @@ module GitMarkdown
       end
     end
 
+    def resolve_graphql_url
+      @graphql_url = ENV.fetch("GITHUB_GRAPHQL_URL") do
+        (@provider == :github) ? "https://api.github.com/graphql" : nil
+      end
+    end
+
     def config_to_yaml
       {
         provider: @provider,
         api_url: @api_url,
+        graphql_url: @graphql_url,
         output_dir: @output_dir,
         default_status: @default_status
       }.to_yaml
