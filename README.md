@@ -130,7 +130,7 @@ Note: `Gemfile.lock` is intentionally not tracked to avoid conflicts across Ruby
 
 ### Git hooks
 
-We use [lefthook](https://lefthook.dev/) with the Ruby [commitlint](https://github.com/arandilopez/commitlint) gem to enforce Conventional Commits on every commit. CI also validates commit messages on pull requests and pushes to main/master.
+We use [lefthook](https://lefthook.dev/) with the Ruby [commitlint](https://github.com/arandilopez/commitlint) gem to enforce Conventional Commits on every commit. We also use [Standard Ruby](https://standardrb.com/) to keep code style consistent. CI validates commit messages, Standard Ruby, tests, and git-cliff changelog generation on pull requests and pushes to main/master.
 
 Run the hook installer once per clone:
 
@@ -146,27 +146,29 @@ rake install
 
 ## Release
 
-Releases are triggered by pushed tags and use `CHANGELOG.md` for GitHub release notes.
+Releases are tag-driven and published by GitHub Actions to RubyGems. Local release commands never publish directly.
 
-If you want changelog automation, install `git-cliff` (<https://github.com/orhun/git-cliff>) locally and use it to update `CHANGELOG.md`.
+Install [git-cliff](https://git-cliff.org/) locally before preparing a release. The release task regenerates `CHANGELOG.md` from Conventional Commits.
 
-The release workflow expects a `## [X.Y.Z]` entry in `CHANGELOG.md` that matches the tag. Note: `release:prep` enforces a clean working tree and must run on the `main` or `master` branch; it will skip if the changelog has no changes.
+Before preparing a release, make sure you are on `main` or `master` with a clean worktree.
 
-Before bumping, install dependencies:
-
-```bash
-bundle install
-```
-
-Then run:
+Then run one of:
 
 ```bash
-# 1) Bump the version (commit created)
-bundle exec gem bump -v X.Y.Z
-
-# 2) Prepare release (changelog + tag + push)
-bundle exec rake release:prep
+bundle exec rake 'release:prepare[patch]'
+bundle exec rake 'release:prepare[minor]'
+bundle exec rake 'release:prepare[major]'
+bundle exec rake 'release:prepare[0.1.0]'
 ```
+
+The task will:
+
+1. Regenerate `CHANGELOG.md` with `git-cliff`.
+1. Update `lib/git/markdown/version.rb`.
+1. Commit the release changes.
+1. Create and push the `vX.Y.Z` tag.
+
+The `Release` workflow then runs tests, publishes the gem to RubyGems, and creates the GitHub release from the changelog entry.
 
 ## Contributing
 
