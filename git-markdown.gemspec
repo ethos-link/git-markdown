@@ -23,6 +23,8 @@ Gem::Specification.new do |spec|
     "changelog_uri" => "#{repo}/blob/#{branch}/CHANGELOG.md",
     "documentation_uri" => "#{repo}/blob/#{branch}/README.md",
     "funding_uri" => "https://www.reviato.com/",
+    "github_repo" => "ssh://github.com/ethos-link/git-markdown",
+    "allowed_push_host" => "https://rubygems.org",
     "rubygems_mfa_required" => "true"
   }
 

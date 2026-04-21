@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-# Note: Releases are handled automatically by GitHub Actions when you push a tag (e.g., v0.2.0)
-# See .github/workflows/release.yml for details
 require "bundler/gem_tasks"
 require "rake/testtask"
 require "standard/rake"
 require_relative "lib/git/markdown/version"
+
+VERSION_PATH = File.expand_path("lib/git/markdown/version.rb", __dir__)
+VALID_RELEASE_TARGETS = %w[major minor patch].freeze
 
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"
@@ -13,77 +14,86 @@ Rake::TestTask.new(:test) do |t|
   t.test_files = FileList["test/**/*_test.rb"]
 end
 
-task default: %i[test standard]
+def current_branch
+  `git branch --show-current`.strip
+end
 
-namespace :release do
-  desc "Full release: update changelog, bump version, commit, tag, and push"
-  task :bump, [:level] do |_t, args|
-    level = args[:level] || "patch"
-    valid_levels = %w[major minor patch pre]
+def clean_worktree?
+  system("git diff --quiet") && system("git diff --cached --quiet")
+end
 
-    unless valid_levels.include?(level)
-      abort "Invalid level: #{level}. Use: #{valid_levels.join(", ")}"
-    end
+def release_version(target)
+  target = target.to_s.strip
+  raise ArgumentError, "Provide patch, minor, major, or an explicit X.Y.Z version." if target.empty?
 
-    branch = `git rev-parse --abbrev-ref HEAD`.strip
-    unless ["main", "master"].include?(branch)
-      abort "Release must run on main or master. Current: #{branch}."
-    end
+  return target if target.match?(/\A\d+\.\d+\.\d+\z/)
 
-    unless system("git diff --quiet") && system("git diff --cached --quiet")
-      abort "Release requires a clean working tree."
-    end
+  unless VALID_RELEASE_TARGETS.include?(target)
+    raise ArgumentError, "Invalid release target #{target.inspect}. Use #{VALID_RELEASE_TARGETS.join(", ")} or X.Y.Z."
+  end
 
-    current = GitMarkdown::VERSION
-    parts = current.split(".").map(&:to_i)
+  major, minor, patch = GitMarkdown::VERSION.split(".").map(&:to_i)
 
-    next_version = case level
-    when "major"
-      "#{parts[0] + 1}.0.0"
-    when "minor"
-      "#{parts[0]}.#{parts[1] + 1}.0"
-    when "patch"
-      "#{parts[0]}.#{parts[1]}.#{parts[2] + 1}"
-    when "pre"
-      "#{parts[0]}.#{parts[1]}.#{parts[2]}.pre.1"
-    end
-
-    puts "=== Step 1: Updating CHANGELOG.md for v#{next_version} ==="
-    sh "git cliff -c cliff.toml --unreleased --tag v#{next_version} -o CHANGELOG.md"
-
-    if system("git diff --quiet -- CHANGELOG.md")
-      puts "Warning: No changelog changes detected"
-    else
-      puts "✓ Changelog updated"
-    end
-
-    puts "\n=== Step 2: Bumping version to #{next_version} ==="
-
-    File.write(
-      "lib/git/markdown/version.rb",
-      <<~RUBY
-        # frozen_string_literal: true
-
-        module GitMarkdown
-          VERSION = "#{next_version}"
-        end
-      RUBY
-    )
-
-    puts "✓ Version updated in lib/git/markdown/version.rb"
-
-    puts "\n=== Step 3: Committing changes ==="
-    sh "git add CHANGELOG.md lib/git/markdown/version.rb"
-    sh "git commit -m \"chore(release): bump version to #{next_version}\""
-    puts "✓ Changes committed"
-
-    puts "\n=== Step 4: Creating and pushing tag ==="
-    sh "git tag -a v#{next_version} -m \"Release v#{next_version}\""
-    sh "git push origin master"
-    sh "git push origin v#{next_version}"
-    puts "✓ Tag v#{next_version} created and pushed"
-
-    puts "\n✅ Release v#{next_version} prepared successfully!"
-    puts "GitHub Actions will now build and publish the release."
+  case target
+  when "major"
+    "#{major + 1}.0.0"
+  when "minor"
+    "#{major}.#{minor + 1}.0"
+  when "patch"
+    "#{major}.#{minor}.#{patch + 1}"
   end
 end
+
+def update_version_file(version)
+  File.write(
+    VERSION_PATH,
+    <<~RUBY
+      # frozen_string_literal: true
+
+      module GitMarkdown
+        VERSION = "#{version}"
+      end
+    RUBY
+  )
+end
+
+def update_changelog(version)
+  success = system("git-cliff", "-c", "cliff.toml", "--unreleased", "--tag", "v#{version}", "-o", "CHANGELOG.md")
+  raise "git-cliff failed. Install git-cliff and make sure cliff.toml is valid." unless success
+  raise "git-cliff did not update CHANGELOG.md. Ensure there are Conventional Commits since the last tag." if system("git", "diff", "--quiet", "--", "CHANGELOG.md")
+end
+
+if Rake::Task.task_defined?("release")
+  Rake::Task["release"].clear
+end
+
+desc "Publishing is handled by GitHub Actions. Use release:prepare[...] instead."
+task :release do
+  abort "Use `bundle exec rake 'release:prepare[patch]'` (or minor/major/X.Y.Z). Publishing runs in GitHub Actions after the tag is pushed."
+end
+
+namespace :release do
+  desc "Prepare a release: update CHANGELOG/version, commit, tag, and push. Accepts patch, minor, major, or X.Y.Z."
+  task :prepare, [:target] do |_task, args|
+    branch = current_branch
+    abort "Release must run on main or master. Current branch: #{branch.inspect}." unless %w[main master].include?(branch)
+    abort "Release requires a clean working tree." unless clean_worktree?
+
+    version = release_version(args[:target])
+    current = GitMarkdown::VERSION
+    abort "Release version #{version} is older than current version #{current}." if Gem::Version.new(version) < Gem::Version.new(current)
+
+    update_changelog(version)
+    update_version_file(version)
+
+    sh "git add CHANGELOG.md lib/git/markdown/version.rb"
+    sh %(git commit -m "chore(release): prepare v#{version}")
+    sh %(git tag -a v#{version} -m "Release v#{version}")
+    sh "git push origin #{branch}"
+    sh "git push origin v#{version}"
+  rescue ArgumentError, RuntimeError => e
+    abort e.message
+  end
+end
+
+task default: %i[test standard]
