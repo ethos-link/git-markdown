@@ -171,7 +171,7 @@ namespace :release do
     tag = release_tag(version)
 
     sh "git add CHANGELOG.md lib/git/markdown/version.rb"
-    sh %(git commit -m "chore(release): prepare v#{version}")
+    sh %(LEFTHOOK=0 git commit -m "chore(release): prepare v#{version}")
     sh %(git tag -a #{tag} -m "Release #{tag}")
     sh "git push origin #{branch}"
     sh "git push origin #{tag}"
