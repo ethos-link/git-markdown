@@ -33,9 +33,9 @@ module GitMarkdown
           review.comments = all_pr_comments
             .select { |c| c["pull_request_review_id"] == review.id }
             .map do |data|
-              comment = Models::Comment.from_api(data)
-              comment.resolved = resolved_ids.include?(comment.id)
-              comment
+            comment = Models::Comment.from_api(data)
+            comment.resolved = resolved_ids.include?(comment.id)
+            comment
           end
           review
         end
