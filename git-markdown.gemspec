@@ -12,10 +12,10 @@ Gem::Specification.new do |spec|
   spec.description = "A CLI tool that fetches GitHub pull requests and converts them to Markdown format, perfect for local AI assistants like opencode and codex."
   spec.homepage = "https://www.ethos-link.com/opensource/git-markdown"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.0.0"
+  spec.required_ruby_version = ">= 4.0"
 
   repo = "https://github.com/ethos-link/git-markdown"
-  branch = "master"
+  branch = "main"
 
   spec.metadata = {
     "homepage_uri" => spec.homepage,
@@ -29,10 +29,8 @@ Gem::Specification.new do |spec|
     "rubygems_mfa_required" => "true"
   }
 
-  spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files -z`.split("\x0").reject do |f|
-      (f == __FILE__) || f.match(%r{\A(?:(?:bin|test|spec|features)/|\.(?:git|travis|circleci)|appveyor)})
-    end
+  spec.files = Dir.chdir(__dir__) do
+    Dir["lib/**/*", "bin/git-markdown", "README.md", "LICENSE*", "CHANGELOG.md", "UPGRADE.md"].select { |file| File.file?(file) }.sort
   end
   spec.bindir = "bin"
   spec.executables = ["git-markdown"]
@@ -41,8 +39,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "thor", "~> 1.0"
 
   spec.add_development_dependency "minitest", "~> 6.0"
-  spec.add_development_dependency "rake", "~> 13.0"
-  spec.add_development_dependency "standard", "~> 1.0"
   spec.add_development_dependency "vcr", "~> 6.0"
   spec.add_development_dependency "webmock", "~> 3.0"
 end
