@@ -1,6 +1,6 @@
 # Upgrade Guide
 
-## Unreleased
+## 0.2.0
 
 ### Shared development and release tooling
 
