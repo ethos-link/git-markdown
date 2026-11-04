@@ -5,7 +5,4 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in git-markdown.gemspec
 gemspec
 
-group :development do
-  gem "commitlint", require: false
-  gem "lefthook", require: false
-end
+gem "ethos-gemkit", "0.2.0", group: [:development, :test], require: false

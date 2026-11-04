@@ -110,76 +110,9 @@ Config is stored under `~/.config/git-markdown/`:
 
 ## Requirements
 
-- Ruby 3.0+
+- Ruby 4.0+
 - Git (for remote detection)
 - GitHub Personal Access Token with `repo` scope
-
-## Development
-
-```bash
-git clone https://github.com/ethos-link/git-markdown.git
-cd git-markdown
-
-bundle install
-bundle exec rake test
-bundle exec standardrb
-bundle exec rake
-```
-
-Note: `Gemfile.lock` is intentionally not tracked to avoid conflicts across Ruby versions.
-
-### Git hooks
-
-We use [lefthook](https://lefthook.dev/) with the Ruby
-[commitlint](https://github.com/arandilopez/commitlint) gem to enforce
-Conventional Commits on every commit. We also use
-[Standard Ruby](https://standardrb.com/) to keep code style consistent. CI
-validates commit messages, Standard Ruby, tests, and git-cliff changelog
-generation on pull requests and pushes to main/master.
-
-Run the hook installer once per clone:
-
-```bash
-bundle exec lefthook install
-```
-
-### Install locally
-
-```bash
-rake install
-```
-
-## Release
-
-Releases are tag-driven and published by GitHub Actions to RubyGems.
-Local release commands never publish directly.
-
-Install [git-cliff](https://git-cliff.org/) locally before preparing a
-release. The release task prepends the next `CHANGELOG.md` section from
-Conventional Commits.
-
-Before preparing a release, make sure you are on `main` or `master` with a
-clean worktree. If the release contains a breaking public-contract change,
-update `UPGRADE.md` with the host-app migration steps first.
-
-Then run one of:
-
-```bash
-bundle exec rake 'release:prepare[patch]'
-bundle exec rake 'release:prepare[minor]'
-bundle exec rake 'release:prepare[major]'
-bundle exec rake 'release:prepare[0.1.0]'
-```
-
-The task will:
-
-1. Prepend the next `CHANGELOG.md` section with `git-cliff`.
-1. Update `lib/git/markdown/version.rb`.
-1. Commit the release changes.
-1. Create and push the `vX.Y.Z` tag.
-
-The `Release` workflow then runs tests, publishes the gem to RubyGems,
-and creates the GitHub release from the changelog entry.
 
 ## Contributing
 
@@ -210,9 +143,31 @@ Please use [Conventional Commits](https://www.conventionalcommits.org/) for comm
 
 MIT License, see [LICENSE.txt](LICENSE.txt)
 
-## About
+## Development and releases
 
-Made by the team at [Ethos Link](https://www.ethos-link.com) — practical software for growing businesses. We build tools for hospitality operators who need clear workflows, fast onboarding, and real human support.
+Shared tooling uses published [Ethos Gemkit](https://github.com/ethos-link/ethos-gemkit).
+Keep the exact Gemfile version and workflow commit pins on the same release.
 
-We also build [Reviato](https://www.reviato.com), “Capture. Interpret. Act.”.
-Turn guest feedback into clear next steps for your team. Collect private appraisals, spot patterns across reviews, and act before small issues turn into public ones.
+```sh
+bundle install
+bundle exec lefthook install
+bundle exec rake verify
+```
+
+From clean, current `main`, run `bundle exec rake 'release:prepare[patch]'`
+(or `minor`, `major`, or an explicit version). Review and merge the generated
+release PR to publish through Actions. Shared prerequisites, registry credentials
+and failed-job recovery are in the [Gemkit release guide](https://github.com/ethos-link/ethos-gemkit#releasing-a-gem).
+
+## Built by Ethos Link
+
+[Ethos Link](https://www.ethos-link.com) builds business software and integrations
+that replace manual handoffs with connected workflows. We help teams automate
+routine work, use their data and improve the processes their business runs on.
+
+- [Reviato](https://www.reviato.com): Read public review trends and collect
+  private customer feedback, so your team can decide what to improve.
+- [EthosPlaces](https://www.ethos.place): Give customers the details they need to
+  choose and visit your business, from opening hours to directions.
+- [Nuntio](https://www.nuntiohq.com): Draft, review and schedule social posts in
+  one workspace, then track each publishing result.

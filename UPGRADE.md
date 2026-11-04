@@ -1,7 +1,11 @@
 # Upgrade Guide
 
-Use this file for host-app migration notes when a release changes public
-contracts, required setup, component locals, generated assets, or runtime
-behavior.
+## Unreleased
 
-No special upgrade notes have been published yet.
+### Shared development and release tooling
+
+Use Ruby 4 and published Gemkit 0.2.0. Install the bundle and hooks, then run the
+project's verification command from the README. Prepare releases from clean,
+current main; merging the generated release PR publishes through Actions.
+See the [Gemkit upgrade guide](https://github.com/ethos-link/ethos-gemkit/blob/main/UPGRADE.md)
+for workflow permissions and registry setup.
