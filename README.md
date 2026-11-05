@@ -1,7 +1,7 @@
 # git-markdown
 
 [![Gem Version](https://badge.fury.io/rb/git-markdown.svg)](https://badge.fury.io/rb/git-markdown)
-[![Ruby](https://github.com/ethos-link/git-markdown/actions/workflows/ruby.yml/badge.svg)](https://github.com/ethos-link/git-markdown/actions/workflows/ruby.yml)
+[![Commit messages](https://github.com/ethos-link/git-markdown/actions/workflows/commitlint.yml/badge.svg)](https://github.com/ethos-link/git-markdown/actions/workflows/commitlint.yml)
 
 Convert GitHub pull requests into a single Markdown file you can review locally. Useful for offline or local AI review workflows with tools like [opencode](https://opencode.ai), GitHub Copilot CLI, and your own scripts.
 
