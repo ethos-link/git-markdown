@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-11-05
+
+
+### Changed
+
+- align consumer guidance with Gemkit
+
+- adopt Gemkit 0.3.0
+
+- adopt Gemkit 0.3.0 and align shared guidance ([#15](https://github.com/ethos-link/git-markdown/pull/15))
+
+
+
+
+### Documentation
+
+- clarify current setup
+
+- clarify current setup ([#13](https://github.com/ethos-link/git-markdown/pull/13))
+
+
+
+
+### Fixed
+
+- preserve release lockfile checksums
+
+- preserve release lockfile checksums ([#14](https://github.com/ethos-link/git-markdown/pull/14))
+
+
+
 ## [0.2.0] - 2026-11-04
 
 
