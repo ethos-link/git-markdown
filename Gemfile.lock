@@ -31,7 +31,7 @@ GEM
       bigdecimal
       rexml
     drb (2.2.3)
-    ethos-gemkit (0.2.0)
+    ethos-gemkit (0.2.1)
       lefthook (~> 2.1)
       lint_roller (~> 1.1)
       rake (~> 13.0)
@@ -119,7 +119,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  ethos-gemkit (= 0.2.0)
+  ethos-gemkit (= 0.2.1)
   git-markdown!
   minitest (~> 6.0)
   vcr (~> 6.0)
@@ -136,7 +136,7 @@ CHECKSUMS
   connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
   crack (1.0.1) sha256=ff4a10390cd31d66440b7524eb1841874db86201d5b70032028553130b6d4c7e
   drb (2.2.3) sha256=0b00d6fdb50995fe4a45dea13663493c841112e4068656854646f418fda13373
-  ethos-gemkit (0.2.0) sha256=8961406c978f5b3ce9ba33495c2b286f731d3e4a7646ac5275b16aa73bca9679
+  ethos-gemkit (0.2.1) sha256=38223887d6505a5b591bcc5294e49bb4c296761949e7009c870d60c0a4aca199
   git-markdown (0.2.0)
   hashdiff (1.2.1) sha256=9c079dbc513dfc8833ab59c0c2d8f230fa28499cc5efb4b8dd276cf931457cd1
   i18n (1.15.2) sha256=00f9eb62412fe593b2a65a97daa75300d37abb8f7202ec748e94b6d46a9dd1b5
