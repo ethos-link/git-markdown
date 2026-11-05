@@ -7,10 +7,10 @@ Convert GitHub pull requests into a single Markdown file you can review locally.
 
 ## Features
 
-- 🔐 Zero-config auth: uses your existing GitHub credentials
-- 🧾 Clean output: PR details, threads, and summaries in readable Markdown
-- 🧰 Practical controls: filter by status, write to file or stdout, debug when needed
-- 🏢 GitHub Enterprise support, plus safe local credential storage (XDG-style, tight perms)
+- Reuse existing GitHub credentials.
+- Export PR details, threads and summaries as Markdown.
+- Filter threads by status and write to a file or stdout.
+- Use GitHub Enterprise and local credential storage with restricted permissions.
 
 ## Install
 
@@ -137,7 +137,7 @@ Please use [Conventional Commits](https://www.conventionalcommits.org/) for comm
 - GitHub CLI auth token: [cli.github.com/manual/gh_auth_token](https://cli.github.com/manual/gh_auth_token)
 - Git credential interface: [git-scm.com/docs/git-credential](https://git-scm.com/docs/git-credential)
 - XDG Base Directory spec: [specifications.freedesktop.org/basedir-spec](https://specifications.freedesktop.org/basedir-spec/latest/)
-- RubyGems: [rubygems.org/gems/git-markdown](https://rubygems.org/)
+- RubyGems: [rubygems.org/gems/git-markdown](https://rubygems.org/gems/git-markdown)
 
 ## License
 
