@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-11-08
+
+
+### Changed
+
+- keep checks local and adopt Gemkit 0.3.1
+
+- keep checks local and adopt Gemkit 0.3.1 ([#17](https://github.com/ethos-link/git-markdown/pull/17))
+
+
+
+
+### Documentation
+
+- make Ethos Link the canonical documentation home
+
+- keep audited technical guidance alongside the code
+
+- add canonical documentation and branded social preview ([#18](https://github.com/ethos-link/git-markdown/pull/18))
+
+
+
 ## [0.2.1] - 2026-11-05
 
 
