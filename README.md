@@ -5,12 +5,24 @@
 
 Convert GitHub pull requests into a single Markdown file you can review locally. Useful for offline or local AI review workflows with tools like [opencode](https://opencode.ai), GitHub Copilot CLI, and your own scripts.
 
+## Documentation
+
+This README and the linked repository guides describe the checked-out code.
+The [Ethos Link project page](https://www.ethos-link.com/opensource/git-markdown)
+provides the canonical public project guide, overview and resources.
+
 ## Features
 
 - Reuse existing GitHub credentials.
 - Export PR details, threads and summaries as Markdown.
 - Filter threads by status and write to a file or stdout.
 - Use GitHub Enterprise and local credential storage with restricted permissions.
+
+## Requirements
+
+- Ruby 4.0+
+- Git (for remote detection)
+- GitHub credentials with access to the requested repository; classic tokens need `repo` scope for private repositories
 
 ## Install
 
@@ -40,7 +52,10 @@ Or specify the repo:
 git-markdown pr owner/repo#123
 ```
 
-It saves `PR-{number}-{title}.md` in the current directory by default.
+It saves `PR-{number}-{title-slug}.md` in the current directory by default.
+For a PR titled "Fix timeout handling", the filename is
+`PR-123-fix-timeout-handling.md`. The title slug is lowercased and replaces
+non-alphanumeric sequences with hyphens.
 
 ## Usage
 
@@ -54,7 +69,8 @@ git-markdown pr owner/repo#123
 # Output to stdout (useful for piping)
 git-markdown pr 123 --stdout | pbcopy  # macOS; on Linux use `xclip`/`wl-copy` or redirect to a file
 
-# Save to a directory
+# Save to an existing directory
+mkdir -p reviews
 git-markdown pr 123 --output ./reviews/
 
 # Filter comment threads (default: unresolved)
@@ -82,14 +98,24 @@ If you see a prompt for a GitHub username or an askpass error, set `GITHUB_TOKEN
 
 ## GitHub Enterprise
 
-Set your API URL:
+Set both API URLs. The REST API fetches PR content; GraphQL supplies review-thread resolution states:
 
 ```bash
 export GITHUB_API_URL=https://github.yourcompany.com/api/v3
+export GITHUB_GRAPHQL_URL=https://github.yourcompany.com/api/graphql
 git-markdown pr owner/repo#123
 ```
 
+Provide an Enterprise token through `GITHUB_TOKEN` or `GH_TOKEN`. The current
+Git credential lookup targets `github.com`, and `gh auth token` is invoked
+without an Enterprise hostname. Environment URLs fill unset configuration;
+values already saved in `config.yml` take precedence.
+
 ## Output
+
+The export contains PR metadata, descriptions and discussions. It does not
+include the code diff. Select comment filtering with `--status`; the CLI's
+current default is `unresolved`.
 
 The generated Markdown includes:
 
@@ -103,16 +129,10 @@ Threads marked with `[resolved]` or `[done]` are filtered out by default. Use `-
 
 ## Configuration
 
-Config is stored under `~/.config/git-markdown/`:
+Config is stored under `$XDG_CONFIG_HOME/git-markdown/`, or `~/.config/git-markdown/` when `XDG_CONFIG_HOME` is unset:
 
-- `config.yml` for settings (provider, API URL, defaults)
+- `config.yml` for provider, REST API URL and GraphQL URL settings
 - `credentials` for the token (permissions: 0600)
-
-## Requirements
-
-- Ruby 4.0+
-- Git (for remote detection)
-- GitHub Personal Access Token with `repo` scope
 
 ## Contributing
 
@@ -156,3 +176,15 @@ bundle exec rake verify
 
 Release preparation, publication, registry setup and recovery are documented
 in the [Gemkit release guide](https://github.com/ethos-link/ethos-gemkit#releasing-a-gem).
+
+## About Ethos Link
+
+[Ethos Link](https://www.ethos-link.com) is a software company founded by
+[Paulo Fidalgo](https://www.fidalgo.pt). This gem is part of the open-source
+tooling we publish alongside our business products:
+
+- [Reviato](https://www.reviato.com): collect private customer feedback and analyse public reviews.
+- [Nuntio](https://www.nuntiohq.com): prepare, review and schedule social posts.
+- [EthosPlaces](https://www.ethos.place): find places, opening hours and contact details.
+
+Explore our [open-source projects](https://www.ethos-link.com/opensource).
