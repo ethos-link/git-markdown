@@ -1,32 +1,167 @@
 # git-markdown
 
-Export GitHub pull requests and review threads to a single Markdown file.
+[![Gem Version](https://badge.fury.io/rb/git-markdown.svg)](https://badge.fury.io/rb/git-markdown)
+[![Commit messages](https://github.com/ethos-link/git-markdown/actions/workflows/commitlint.yml/badge.svg)](https://github.com/ethos-link/git-markdown/actions/workflows/commitlint.yml)
 
-For developers reviewing pull-request discussions offline or supplying context to local tools. It exports metadata and discussion; it does not export the code diff. GitLab merge requests and custom templates are not implemented.
+Convert GitHub pull requests into a single Markdown file you can review locally. Useful for offline or local AI review workflows with tools like [opencode](https://opencode.ai), GitHub Copilot CLI, and your own scripts.
 
-[Project and full documentation](https://www.ethos-link.com/opensource/git-markdown) · [RubyGems](https://rubygems.org/gems/git-markdown) · [Changelog](CHANGELOG.md)
+## Documentation
+
+This README and the linked repository guides describe the checked-out code.
+The [Ethos Link project page](https://www.ethos-link.com/opensource/git-markdown)
+provides the canonical public project guide, overview and resources.
+
+## Features
+
+- Reuse existing GitHub credentials.
+- Export PR details, threads and summaries as Markdown.
+- Filter threads by status and write to a file or stdout.
+- Use GitHub Enterprise and local credential storage with restricted permissions.
 
 ## Requirements
 
-Ruby 4.0 or newer. Git is needed to infer the repository from its remote. Authenticate using an existing GitHub credential source or `git-markdown setup`; the token must have access to the requested repository.
+- Ruby 4.0+
+- Git (for remote detection)
+- GitHub credentials with access to the requested repository; classic tokens need `repo` scope for private repositories
 
-## Installation
+## Install
 
-```sh
+```bash
 gem install git-markdown
 ```
 
 ## Quick start
 
-```sh
-gem install git-markdown
+### 1) Setup (optional)
+
+```bash
+git-markdown setup
+```
+
+### 2) Export a PR
+
+From inside a git repository:
+
+```bash
+git-markdown pr 123
+```
+
+Or specify the repo:
+
+```bash
 git-markdown pr owner/repo#123
 ```
 
-Replace `owner/repo#123` with an accessible pull request. The command writes `PR-{number}-{title}.md` in the current directory. From a checkout with a GitHub remote, `git-markdown pr 123` infers the repository.
+It saves `PR-{number}-{title-slug}.md` in the current directory by default.
+For a PR titled "Fix timeout handling", the filename is
+`PR-123-fix-timeout-handling.md`. The title slug is lowercased and replaces
+non-alphanumeric sequences with hyphens.
 
-See the [full documentation](https://www.ethos-link.com/opensource/git-markdown) for configuration, workflows, operational details and limitations.
-For existing installations, read [UPGRADE.md](UPGRADE.md).
+## Usage
+
+```bash
+# Export PR from current repository
+git-markdown pr 123
+
+# Export PR from a specific repository
+git-markdown pr owner/repo#123
+
+# Output to stdout (useful for piping)
+git-markdown pr 123 --stdout | pbcopy  # macOS; on Linux use `xclip`/`wl-copy` or redirect to a file
+
+# Save to an existing directory
+mkdir -p reviews
+git-markdown pr 123 --output ./reviews/
+
+# Filter comment threads (default: unresolved)
+git-markdown pr 123 --status=unresolved
+git-markdown pr 123 --status=resolved
+git-markdown pr 123 --status=all
+
+# Debug output
+git-markdown pr 123 --debug
+
+# Show version
+git-markdown version
+```
+
+## Authentication
+
+`git-markdown` looks for a GitHub token in this order:
+
+1. `GITHUB_TOKEN` or `GH_TOKEN` environment variables
+2. Git credential store (`git credential fill`)
+3. GitHub CLI (`gh auth token`)
+4. Token saved by `git-markdown setup`
+
+If you see a prompt for a GitHub username or an askpass error, set `GITHUB_TOKEN` or `GH_TOKEN` in your environment to skip git credential prompts.
+
+## GitHub Enterprise
+
+Set both API URLs. The REST API fetches PR content; GraphQL supplies review-thread resolution states:
+
+```bash
+export GITHUB_API_URL=https://github.yourcompany.com/api/v3
+export GITHUB_GRAPHQL_URL=https://github.yourcompany.com/api/graphql
+git-markdown pr owner/repo#123
+```
+
+Provide an Enterprise token through `GITHUB_TOKEN` or `GH_TOKEN`. The current
+Git credential lookup targets `github.com`, and `gh auth token` is invoked
+without an Enterprise hostname. Environment URLs fill unset configuration;
+values already saved in `config.yml` take precedence.
+
+## Output
+
+The export contains PR metadata, descriptions and discussions. It does not
+include the code diff. Select comment filtering with `--status`; the CLI's
+current default is `unresolved`.
+
+The generated Markdown includes:
+
+- PR metadata (title, author, status, created date)
+- PR description (full body)
+- Review comments grouped by file with line numbers
+- General discussion comments
+- Review summaries (approvals, change requests)
+
+Threads marked with `[resolved]` or `[done]` are filtered out by default. Use `--status=all` to include them.
+
+## Configuration
+
+Config is stored under `$XDG_CONFIG_HOME/git-markdown/`, or `~/.config/git-markdown/` when `XDG_CONFIG_HOME` is unset:
+
+- `config.yml` for provider, REST API URL and GraphQL URL settings
+- `credentials` for the token (permissions: 0600)
+
+## Contributing
+
+1. Fork it
+2. Create a branch (`git checkout -b feature/my-feature`)
+3. Commit your changes
+4. Push (`git push origin feature/my-feature`)
+5. Open a Pull Request
+
+Please use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages.
+
+## Roadmap
+
+- [ ] GitLab Merge Request support (`git-markdown mr`)
+- [ ] GitLab and GitHub Issue support (`git-markdown issue`)
+- [ ] Custom templates
+- [ ] Optional diff in output
+
+## References
+
+- GitHub REST API docs: [docs.github.com/en/rest](https://docs.github.com/en/rest)
+- GitHub CLI auth token: [cli.github.com/manual/gh_auth_token](https://cli.github.com/manual/gh_auth_token)
+- Git credential interface: [git-scm.com/docs/git-credential](https://git-scm.com/docs/git-credential)
+- XDG Base Directory spec: [specifications.freedesktop.org/basedir-spec](https://specifications.freedesktop.org/basedir-spec/latest/)
+- RubyGems: [rubygems.org/gems/git-markdown](https://rubygems.org/gems/git-markdown)
+
+## License
+
+MIT License, see [LICENSE.txt](LICENSE.txt)
 
 ## Development and releases
 
@@ -40,18 +175,16 @@ bundle exec rake verify
 ```
 
 Release preparation, publication, registry setup and recovery are documented
-in the [Gemkit release guide](https://www.ethos-link.com/opensource/ethos-gemkit#releasing-a-gem).
+in the [Gemkit release guide](https://github.com/ethos-link/ethos-gemkit#releasing-a-gem).
 
 ## About Ethos Link
 
 [Ethos Link](https://www.ethos-link.com) is a software company founded by
-[Paulo Fidalgo](https://www.fidalgo.pt). We publish these Ruby tools alongside
-our business products:
+[Paulo Fidalgo](https://www.fidalgo.pt). This gem is part of the open-source
+tooling we publish alongside our business products:
 
-- [Reviato](https://www.reviato.com): private customer feedback and public review analysis.
+- [Reviato](https://www.reviato.com): collect private customer feedback and analyse public reviews.
 - [Nuntio](https://www.nuntiohq.com): prepare, review and schedule social posts.
 - [EthosPlaces](https://www.ethos.place): find places, opening hours and contact details.
 
-## License
-
-MIT. See [LICENSE.txt](LICENSE.txt).
+Explore our [open-source projects](https://www.ethos-link.com/opensource).
